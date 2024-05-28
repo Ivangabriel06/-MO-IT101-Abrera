@@ -8,89 +8,39 @@ package mo.it101.group.abrera;
  *
  * @author Ivan Gabriel Abrera
  */
-import java.text.DecimalFormat;
-import java.util.Scanner;
-
 public class Main {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        DecimalFormat df = new DecimalFormat("#,###.00");
+    public static void Main(String[] args) {
+        
+        Department dept = new Department();
+        dept.setDepartmentID("D001");
+        dept.setName("Engineering");
+
+        Position position = new Position();
+        position.setPositionID("P001");
+        position.setTitle("Software Engineer");
+        position.setDescription("Develops software solutions");
+
+        Salary salary = new Salary();
+        salary.setSalaryID("S001");
+        salary.setBaseSalary(50000);
+        salary.setBonuses(5000);
+        salary.setDeductions(2000);
+
         Employee emp = new Employee();
+        emp.setEmployeeID("E001");
+        emp.setName("John Doe");
+        emp.setDepartment(dept);
+        emp.setPosition(position);
+        emp.setSalary(salary);
 
-     
-        emp.setID("10001");
-        emp.setFullName("Smith", "John");
-        emp.setBasicSalary(90000);
-        emp.setRiceSubsidy(1500);
-        emp.setPhoneAllowance(2000);
-        emp.setClothingAllowance(1000);
-        emp.setHourlyRate(535.71);
-
-      
-        UserInput payrollUser = new UserInput();
         
-        String qID = payrollUser.validateID(scanner);
+        dept.addEmployee(emp);
+
         
-        emp.displayInfo();
-
-        scanner.close();
-    }
-}
-
-class UserInput {
-    public String validateID(Scanner scanner) {
-        System.out.println("TASK 7: Enter Employee ID: (e.g. 10001)");
-        String userInput = scanner.nextLine();
-        return userInput.equals("10001") ? userInput : validateID(scanner);
-    }
-}
-
-class Employee {
-    private String ID;
-    private String lastName;
-    private String firstName;
-    private double basicSalary;
-    private double riceSubsidy;
-    private double phoneAllowance;
-    private double clothingAllowance;
-    private double hourlyRate;
-
-    public void setID(String ID) {
-        this.ID = ID;
-    }
-
-    public void setFullName(String lastName, String firstName) {
-        this.lastName = lastName;
-        this.firstName = firstName;
-    }
-
-    public void setBasicSalary(double basicSalary) {
-        this.basicSalary = basicSalary;
-    }
-
-    public void setRiceSubsidy(double riceSubsidy) {
-        this.riceSubsidy = riceSubsidy;
-    }
-
-    public void setPhoneAllowance(double phoneAllowance) {
-        this.phoneAllowance = phoneAllowance;
-    }
-
-    public void setClothingAllowance(double clothingAllowance) {
-        this.clothingAllowance = clothingAllowance;
-    }
-
-    public void setHourlyRate(double hourlyRate) {
-        this.hourlyRate = hourlyRate;
-    }
-
-    public void displayInfo() {
-        System.out.println("Last Name: " + lastName +
-                "\nFirst Name: " + firstName +
-                "\nBasic Salary: " + basicSalary +
-                "\nRice Subsidy: " + riceSubsidy +
-                "\nPhone Allowance: " + phoneAllowance +
-                "\nClothing Allowance: " + clothingAllowance +
-                "\nHourly Rate: " + hourlyRate);
+        System.out.println("Employee ID: " + emp.getEmployeeID());
+        System.out.println("Employee Name: " + emp.getName());
+        System.out.println("Department: " + emp.getDepartment().getName());
+        System.out.println("Position: " + emp.getPosition().getTitle());
+        System.out.println("Net Salary: " + emp.getSalary().calculateNetSalary());
     }
 }
