@@ -1,0 +1,66 @@
+class PayrollFrame extends JFrame {
+    private JTextField employeeNumberField;
+    private JTextField payCoverageField;
+    private JTextArea outputArea;
+
+    public PayrollFrame() {
+        setTitle("MotorPH Employee Payroll System");
+        setSize(400, 300);
+        setLayout(new BorderLayout());
+
+        // Input panel
+        JPanel inputPanel = new JPanel(new GridLayout(3, 2));
+
+        // Employee Number
+        JLabel employeeNumberLabel = new JLabel("Employee Number:");
+        employeeNumberField = new JTextField();
+        inputPanel.add(employeeNumberLabel);
+        inputPanel.add(employeeNumberField);
+
+        // Pay Coverage
+        JLabel payCoverageLabel = new JLabel("Pay Coverage:");
+        payCoverageField = new JTextField();
+        inputPanel.add(payCoverageLabel);
+        inputPanel.add(payCoverageField);
+
+        // Submit button
+        JButton submitButton = new JButton("Submit");
+        submitButton.addActionListener(new SubmitButtonListener());
+        inputPanel.add(submitButton);
+
+        // Output area
+        outputArea = new JTextArea();
+        outputArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(outputArea);
+
+        add(inputPanel, BorderLayout.NORTH);
+        add(scrollPane, BorderLayout.CENTER);
+    }
+
+    private class SubmitButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                // Validate and process input
+                int employeeNumber = Integer.parseInt(employeeNumberField.getText().trim());
+                String payCoverage = payCoverageField.getText().trim();
+
+                if (payCoverage.isEmpty()) {
+                    throw new IllegalArgumentException("Pay Coverage cannot be empty.");
+                }
+
+                // Display result
+                outputArea.append("Employee Number: " + employeeNumber + "\n");
+                outputArea.append("Pay Coverage: " + payCoverage + "\n\n");
+                
+                // Clear input fields
+                employeeNumberField.setText("");
+                payCoverageField.setText("");
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(PayrollFrame.this, "Invalid Employee Number. Please enter a valid number.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            } catch (IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(PayrollFrame.this, ex.getMessage(), "Input Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+}
