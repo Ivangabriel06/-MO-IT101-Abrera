@@ -1,0 +1,173 @@
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+class PayrollFrame extends JFrame {
+    private JTextField employeeNumberField;
+    private JTextField payCoverageField;
+    private JTextField employeeNameField;
+    private DefaultTableModel tableModel;
+    private JTable employeeTable;
+    private JButton updateButton;
+    private JButton deleteButton;
+
+    public PayrollFrame() {
+        setTitle("MotorPH Employee Payroll System");
+        setSize(600, 400);
+        setLayout(new BorderLayout());
+
+        
+        JPanel inputPanel = new JPanel(new GridLayout(4, 2));
+
+        
+        JLabel employeeNameLabel = new JLabel("Employee Name:");
+        employeeNameField = new JTextField();
+        inputPanel.add(employeeNameLabel);
+        inputPanel.add(employeeNameField);
+
+        
+        JLabel employeeNumberLabel = new JLabel("Employee Number:");
+        employeeNumberField = new JTextField();
+        inputPanel.add(employeeNumberLabel);
+        inputPanel.add(employeeNumberField);
+
+        
+        JLabel payCoverageLabel = new JLabel("Pay Coverage:");
+        payCoverageField = new JTextField();
+        inputPanel.add(payCoverageLabel);
+        inputPanel.add(payCoverageField);
+
+        
+        JButton submitButton = new JButton("Submit");
+        submitButton.addActionListener(new SubmitButtonListener());
+        inputPanel.add(submitButton);
+
+        
+        updateButton = new JButton("Update");
+        updateButton.setEnabled(false);
+        updateButton.addActionListener(new UpdateButtonListener());
+        inputPanel.add(updateButton);
+
+        
+        deleteButton = new JButton("Delete");
+        deleteButton.setEnabled(false);
+        deleteButton.addActionListener(new DeleteButtonListener());
+        inputPanel.add(deleteButton);
+
+        
+        tableModel = new DefaultTableModel(new String[]{"Employee Number", "Employee Name", "Pay Coverage"}, 0);
+        employeeTable = new JTable(tableModel);
+        employeeTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        employeeTable.getSelectionModel().addListSelectionListener(e -> updateInputFields());
+        JScrollPane scrollPane = new JScrollPane(employeeTable);
+
+        
+        add(inputPanel, BorderLayout.NORTH);
+        add(scrollPane, BorderLayout.CENTER);
+    }
+
+    
+    private class SubmitButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                int employeeNumber = Integer.parseInt(employeeNumberField.getText().trim());
+                String employeeName = employeeNameField.getText().trim();
+                String payCoverage = payCoverageField.getText().trim();
+
+                if (employeeName.isEmpty() || payCoverage.isEmpty()) {
+                    throw new IllegalArgumentException("Employee Name and Pay Coverage cannot be empty.");
+                }
+
+                tableModel.addRow(new Object[]{employeeNumber, employeeName, payCoverage});
+                clearInputFields();
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(PayrollFrame.this, "Invalid Employee Number. Please enter a valid number.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            } catch (IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(PayrollFrame.this, ex.getMessage(), "Input Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    
+    private class UpdateButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int selectedRow = employeeTable.getSelectedRow();
+            if (selectedRow >= 0) {
+                try {
+                    int employeeNumber = Integer.parseInt(employeeNumberField.getText().trim());
+                    String employeeName = employeeNameField.getText().trim();
+                    String payCoverage = payCoverageField.getText().trim();
+
+                    if (employeeName.isEmpty() || payCoverage.isEmpty()) {
+                        throw new IllegalArgumentException("Employee Name and Pay Coverage cannot be empty.");
+                    }
+
+                    tableModel.setValueAt(employeeNumber, selectedRow, 0);
+                    tableModel.setValueAt(employeeName, selectedRow, 1);
+                    tableModel.setValueAt(payCoverage, selectedRow, 2);
+                    clearInputFields();
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(PayrollFrame.this, "Invalid Employee Number. Please enter a valid number.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(PayrollFrame.this, ex.getMessage(), "Input Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
+    }
+
+    
+    private class DeleteButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int selectedRow = employeeTable.getSelectedRow();
+            if (selectedRow >= 0) {
+                int response = JOptionPane.showConfirmDialog(
+                        PayrollFrame.this,
+                        "Are you sure you want to delete this record?",
+                        "Confirm Delete",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE
+                );
+
+                if (response == JOptionPane.YES_OPTION) {
+                    tableModel.removeRow(selectedRow);
+                    clearInputFields();
+                }
+            }
+        }
+    }
+
+    private void updateInputFields() {
+        int selectedRow = employeeTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            employeeNumberField.setText(String.valueOf(tableModel.getValueAt(selectedRow, 0)));
+            employeeNameField.setText(String.valueOf(tableModel.getValueAt(selectedRow, 1)));
+            payCoverageField.setText(String.valueOf(tableModel.getValueAt(selectedRow, 2)));
+
+            updateButton.setEnabled(true);
+            deleteButton.setEnabled(true);
+        } else {
+            clearInputFields();
+        }
+    }
+
+    private void clearInputFields() {
+        employeeNumberField.setText("");
+        employeeNameField.setText("");
+        payCoverageField.setText("");
+        updateButton.setEnabled(false);
+        deleteButton.setEnabled(false);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            PayrollFrame frame = new PayrollFrame();
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setVisible(true);
+        });
+    }
+}
